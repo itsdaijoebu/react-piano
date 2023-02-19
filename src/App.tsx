@@ -101,7 +101,8 @@ function App() {
     <>
       <section className="keyboard">{allOctaves}</section>
 
-      <section className="audioList">{allNoteAudio}</section>
+      {/* <section className="audioList">{allNoteAudio}</section> */}
+      <section id="audioList" className="audioList"></section>
     </>
   );
 }

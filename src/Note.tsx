@@ -1,77 +1,94 @@
-import { useState, MouseEvent } from "react";
+import { useState, useEffect, useRef, MouseEvent } from "react";
 import { NoteType } from "./helpers";
 
 type NoteProp = {
-  note: string,
-  color: string
-}
+  note: string;
+  color: string;
+};
 
 export default function Note({ note, color }: NoteProp) {
   const [isPressed, setIsPressed] = useState(false);
-  const [isEntered, setIsEntered] = useState(false);
+  const timerRef = useRef<number>();
+  const intervalRef = useRef<number>();
+  const audioRef = useRef<HTMLAudioElement>();
+
+  useEffect(() => {
+    audioRef.current = audioRef.current || createAudioElement(note);
+    
+    if(isPressed) {
+      if(timerRef.current) {
+        clearTimeout(timerRef.current)
+      }
+      if(intervalRef.current) {
+        clearInterval(intervalRef.current)
+      }
+      audioRef.current.currentTime = 0;
+      audioRef.current.volume = 1;
+      audioRef.current.play();
+    } else {
+      timerRef.current = setTimeout(() => {
+        let fadeSpeed = 0.03;
+        let minVol = 0;
+        intervalRef.current = setInterval(() => {
+          if(!audioRef.current) return
+
+          //prevent the volume from going below 0
+          if(audioRef.current.volume > minVol && audioRef.current.volume < fadeSpeed) {
+            audioRef.current.volume = fadeSpeed;
+          }
+
+          if(audioRef.current.volume > minVol) {
+            audioRef.current.volume -= fadeSpeed;
+          } else {
+            audioRef.current.pause();
+            clearInterval(intervalRef.current)
+          }
+        }, 1);
+      }, 1);
+    }
+
+    return () => {
+      if(timerRef.current) {
+        clearTimeout(timerRef.current);
+      }
+      if(intervalRef.current) {
+        clearInterval(intervalRef.current)
+      }
+    };
+  }, [isPressed, note])
 
   function handleKeyPressed() {
     setIsPressed(true);
-    playNote();
   }
   function handleKeyReleased() {
     setIsPressed(false);
-    setIsEntered(false);
-    stopNote();
   }
   function handleKeyMoved(e: MouseEvent<HTMLButtonElement>) {
-    if (!isEntered) {
-      if (e.buttons === 1) {
-        setIsEntered(true);
+    if(!isPressed) {
+      if(e.buttons === 1) {
         setIsPressed(true);
-        playNote();
       }
     }
   }
 
-  function playNote() {
-    let noteAudio: HTMLAudioElement = document.getElementById(
-      `audio-${note}`
-    ) as HTMLAudioElement;
-    noteAudio.currentTime = 0;
-    noteAudio.volume = 1;
-    noteAudio.play();
-  }
-
-  function stopNote() {
-    let noteAudio: HTMLAudioElement = document.getElementById(
-      `audio-${note}`
-    ) as HTMLAudioElement;
-
-    // noteAudio.pause();
-    let noteTimer = setInterval(function () {
-      let minVol = 0;
-      let fadeSpeed = 0.03;
-      //prevents noteAudio.volume from going below zero
-      if (noteAudio.volume > minVol && noteAudio.volume < fadeSpeed)
-        noteAudio.volume = fadeSpeed;
-
-      //when called, causes the note to rapidly fade and deactivate all visualization panels
-      if (noteAudio.volume > minVol) {
-        noteAudio.volume -= fadeSpeed;
-      } else {
-        noteAudio.pause();
-
-        clearInterval(noteTimer);
-      }
-    }, 1);
+  function createAudioElement(note: string): HTMLAudioElement {
+    const audio = new Audio(`/assets/sounds/default/${note}.mp3`);
+    audio.id = `audio-${note}`;
+    const audioList = document.getElementById('audioList')
+    if(audioList) audioList.appendChild(audio);
+    return audio;
   }
 
   return (
-    <button
-      id={`note-${note}`}
-      className={`key ${color} ${isPressed ? "active" : ""}`}
-      onMouseDown={handleKeyPressed}
-      onMouseMove={handleKeyMoved}
-      onMouseUp={handleKeyReleased}
-      onMouseLeave={handleKeyReleased}
+    <button 
+    id={`note-${note}`}
+    className={`key ${color} ${isPressed ? 'active' : ''}`}
+    onMouseDown={handleKeyPressed}
+    onMouseMove={handleKeyMoved}
+    onMouseUp={handleKeyReleased}
+    onMouseLeave={handleKeyReleased}
     >
       {note}
     </button>
-  );
+  )
 }
