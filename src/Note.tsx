@@ -1,7 +1,12 @@
 import { useState, MouseEvent } from "react";
 import { NoteType } from "./helpers";
 
-export default function Note({ note, color }: NoteType) {
+type NoteProp = {
+  note: string,
+  color: string
+}
+
+export default function Note({ note, color }: NoteProp) {
   const [isPressed, setIsPressed] = useState(false);
   const [isEntered, setIsEntered] = useState(false);
 
