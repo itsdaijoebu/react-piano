@@ -6,10 +6,11 @@ import { NoteType } from "./helpers";
 type NoteProp = {
   note: string;
   color: string;
+  pressedKeys: Set<string>,
   keyboardKey?: string;
 };
 
-export default function Note({ note, color, keyboardKey }: NoteProp) {
+export default function Note({ note, color, pressedKeys, keyboardKey }: NoteProp) {
   const [isPressed, setIsPressed] = useState(false);
   const timerRef = useRef<number>();
   const intervalRef = useRef<number>();
@@ -64,6 +65,16 @@ export default function Note({ note, color, keyboardKey }: NoteProp) {
     };
   }, [isPressed]);
 
+  useEffect(() => {
+    if(!keyboardKey) return
+
+    if(pressedKeys.has(keyboardKey)) {
+      setIsPressed(true);
+    } else {
+      setIsPressed(false)
+    }
+  }, [pressedKeys])
+
   function handleKeyPressed() {
     setIsPressed(true);
   }
@@ -95,7 +106,7 @@ export default function Note({ note, color, keyboardKey }: NoteProp) {
       onMouseUp={handleKeyReleased}
       onMouseLeave={handleKeyReleased}
     >
-      {note}
+      <span className="toggleable-text">{keyboardKey || note}</span>
     </button>
   );
 }
