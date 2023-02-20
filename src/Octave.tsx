@@ -18,7 +18,6 @@ export default function Octave({keyboardStart, keyboardLayout, octaveNum, presse
 
   const octaveLength = octaveBasic.length;
   const keyboardKeys = keyboardLayout.slice((octaveNum-keyboardStart)*octaveLength, octaveLength*octaveNum)
-  console.log('keys:', keyboardKeys, (octaveNum-keyboardStart)*octaveLength, octaveLength)
 
   return (
     <>

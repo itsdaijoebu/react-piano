@@ -18,7 +18,6 @@ export default function Note({ note, color, pressedKeys, keyboardKey }: NoteProp
 
   useEffect(() => {
     audioRef.current = audioRef.current || createAudioElement(note);
-    console.log(keyboardKey ? keyboardKey : "no associated key");
 
     if (isPressed) {
       if (timerRef.current) {
