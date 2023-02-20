@@ -1,16 +1,21 @@
 import React from "react";
-import { octaveBasic, OctaveNum } from "./helpers";
+import { octaveBasic } from "./helpers";
 import Note from "./Note";
 
-export default function Octave({octaveNum}: OctaveNum) {
+type OctaveProp = {
+  octaveNum: number,
+  keyboardKeys?: string[]
+}
+
+export default function Octave({octaveNum, keyboardKeys}: OctaveProp) {
   const octaveSpecific = octaveBasic.map((note) => ({
     note: note.note + octaveNum,
     color: note.color,
   }));
   return (
     <>
-      {octaveSpecific.map((note) => (
-        <Note note={note.note}  color={note.color} key={`note-${note.note}`}/>
+      {octaveSpecific.map((note, i) => (
+        <Note note={note.note}  color={note.color} keyboardKey={keyboardKeys ? keyboardKeys[i] : ''} key={`note-${note.note}`}/>
       ))}
     </>
   );

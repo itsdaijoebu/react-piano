@@ -1,7 +1,10 @@
 import React from "react";
-import { octaveBasic, OctaveNum } from "./helpers";
+import { octaveBasic } from "./helpers";
 
-export default function NoteAudio({ octaveNum }: OctaveNum) {
+type AudioProp = {
+  octaveNum: number
+}
+export default function NoteAudio({ octaveNum }: AudioProp) {
   return (
     <>
       {octaveBasic.map((note) => {

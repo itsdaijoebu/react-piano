@@ -3,10 +3,6 @@ export type NoteType = {
   color: string
 }
 
-export type OctaveNum = {
-  octaveNum: number
-}
-
 export const octaveBasic: NoteType[] = [
   {
     note: "C",

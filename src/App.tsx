@@ -93,6 +93,7 @@ function App() {
   const maxKeys = keyboardKeysSplit.length;
 
   for (let i = startOctave; i < numOctaves + startOctave; i++) {
+    console.log('populate keyboard')
     allOctaves.push(<Octave octaveNum={i} key={`octave-${i}`} />);
     allNoteAudio.push(<NoteAudio octaveNum={i} key={`audio-${i}`} />);
   }

@@ -81,6 +81,7 @@ button.black {
   margin: 0;
   padding: 0;
   position: relative;
+  user-select: none;
 }
 
 .key,
