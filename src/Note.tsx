@@ -6,58 +6,41 @@ import { NoteType } from "./helpers";
 type NoteProp = {
   note: string;
   color: string;
-  pressedKeys: Set<string>,
-  keyboardKey?: string;
+  pressedKeys: Set<string>;
+  keyboardKey: string;
+  isSustained: boolean;
 };
 
-export default function Note({ note, color, pressedKeys, keyboardKey }: NoteProp) {
+export default function Note({
+  note,
+  color,
+  pressedKeys,
+  keyboardKey,
+  isSustained,
+}: NoteProp) {
   const [isPressed, setIsPressed] = useState(false);
-  const timerRef = useRef<number>();
-  const intervalRef = useRef<number>();
+  const intervalRef = useRef<number>(); //used to keep a ref to the interval 
   const audioRef = useRef<HTMLAudioElement>();
+
+  useEffect(() => {
+    if (!keyboardKey) return;
+    if (pressedKeys.has(keyboardKey)) {
+      setIsPressed(true);
+    } else {
+      setIsPressed(false);
+    }
+  }, [pressedKeys]);
 
   useEffect(() => {
     audioRef.current = audioRef.current || createAudioElement(note);
 
     if (isPressed) {
-      if (timerRef.current) {
-        clearTimeout(timerRef.current);
-      }
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-      }
-      audioRef.current.currentTime = 0;
-      audioRef.current.volume = 1;
-      audioRef.current.play();
-    } else {
-      timerRef.current = setTimeout(() => {
-        let fadeSpeed = 0.03;
-        let minVol = 0;
-        intervalRef.current = setInterval(() => {
-          if (!audioRef.current) return;
-
-          //prevent the volume from going below 0
-          if (
-            audioRef.current.volume > minVol &&
-            audioRef.current.volume < fadeSpeed
-          ) {
-            audioRef.current.volume = fadeSpeed;
-          }
-
-          if (audioRef.current.volume > minVol) {
-            audioRef.current.volume -= fadeSpeed;
-          } else {
-            audioRef.current.pause();
-            clearInterval(intervalRef.current);
-          }
-        }, 1);
-      }, 1);
+      playNote();
+    } else if (!isSustained) {
+      stopNote();
     }
 
     return () => {
-      if (timerRef.current) {
-        clearTimeout(timerRef.current);
-      }
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
       }
@@ -65,14 +48,41 @@ export default function Note({ note, color, pressedKeys, keyboardKey }: NoteProp
   }, [isPressed]);
 
   useEffect(() => {
-    if(!keyboardKey) return
-
-    if(pressedKeys.has(keyboardKey)) {
-      setIsPressed(true);
-    } else {
-      setIsPressed(false)
+    // if (!isSustained && !isPressed) {
+    //   if (audioRef.current) {
+    //     audioRef.current.pause();
+    //   }
+    // }
+    if (!isSustained && !isPressed) {
+      // stopNote();
+        let fadeSpeed = 0.03;
+        let minVol = 0;
+        let interval = setInterval(() => {
+          if (!audioRef.current) return;
+  
+          //prevent the volume from going below 0
+          if (
+            audioRef.current.volume > minVol &&
+            audioRef.current.volume < fadeSpeed
+          ) {
+            audioRef.current.volume = fadeSpeed;
+          }
+  
+          if (audioRef.current.volume > minVol) {
+            audioRef.current.volume -= fadeSpeed;
+          } else {
+            audioRef.current.pause();
+            clearInterval(interval);
+          }
+        }, 1);
     }
-  }, [pressedKeys])
+
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
+  }, [isSustained]);
 
   function handleKeyPressed() {
     setIsPressed(true);
@@ -94,6 +104,39 @@ export default function Note({ note, color, pressedKeys, keyboardKey }: NoteProp
     const audioList = document.getElementById("audioList");
     if (audioList) audioList.appendChild(audio);
     return audio;
+  }
+
+  function playNote() {
+    if (!audioRef.current) return;
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+    }
+    audioRef.current.currentTime = 0;
+    audioRef.current.volume = 1;
+    audioRef.current.play();
+  }
+
+  function stopNote() {
+      let fadeSpeed = 0.03;
+      let minVol = 0;
+      intervalRef.current = setInterval(() => {
+        if (!audioRef.current) return;
+
+        //prevent the volume from going below 0
+        if (
+          audioRef.current.volume > minVol &&
+          audioRef.current.volume < fadeSpeed
+        ) {
+          audioRef.current.volume = fadeSpeed;
+        }
+
+        if (audioRef.current.volume > minVol) {
+          audioRef.current.volume -= fadeSpeed;
+        } else {
+          audioRef.current.pause();
+          clearInterval(intervalRef.current);
+        }
+      }, 1);
   }
 
   return (

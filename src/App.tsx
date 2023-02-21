@@ -1,12 +1,22 @@
 import { useEffect, useState, useRef } from "react";
 import Note from "./Note";
+import Sustain from "./Sustain";
 import Octave from "./Octave";
 import { keyboardLayouts } from "./keyboardLayouts";
 
 function App() {
   const [pressedKeys, setPressedKeys] = useState(new Set<string>());
-  const [keyLayout, setKeyLayout] = useState(keyboardLayouts.keyboardKeysConsecutive)
+  const [keyLayout, setKeyLayout] = useState(
+    keyboardLayouts.keyboardKeysConsecutive
+  );
+  const [suscount, setsuscount] = useState(0)
+  const [isSustained, setIsSustained] = useState(false);
   const allOctavesRef = useRef<JSX.Element[]>([]);
+
+  useEffect(() => {
+    setsuscount(suscount+1)
+    console.log("sustained", isSustained, suscount);
+  }, [isSustained]);
 
   let numOctaves = 3;
   let startOctave = 3;
@@ -17,13 +27,24 @@ function App() {
   let useKeyConfig = keyboardLayouts.keyboardKeysSplit;
 
   allOctavesRef.current = Array(numOctaves)
-  .fill(null)
-  .map((_, i) => (
-    <Octave keyboardStart={startOctave} keyboardLayout={keyLayout} octaveNum={startOctave + i} pressedKeys={pressedKeys} key={`octave-${i}`} />
-  ));
+    .fill(null)
+    .map((_, i) => (
+      <Octave
+        keyboardStart={startOctave}
+        keyboardLayout={keyLayout}
+        octaveNum={startOctave + i}
+        pressedKeys={pressedKeys}
+        isSustained={isSustained}
+        key={`octave-${i}`}
+      />
+    ));
 
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
+      if (e.repeat) return;
+      if (e.key === " ") {
+        setIsSustained(true);
+      }
       setPressedKeys((keys) => {
         const newKeys = new Set(keys);
         newKeys.add(e.key);
@@ -31,6 +52,9 @@ function App() {
       });
     }
     function handleKeyUp(e: KeyboardEvent) {
+      if (e.key === " ") {
+        setIsSustained(false);
+      }
       setPressedKeys((keys) => {
         const newKeys = new Set(keys);
         newKeys.delete(e.key);
@@ -47,6 +71,13 @@ function App() {
     };
   }, []);
 
+  function clickSustain(e: React.MouseEvent<HTMLButtonElement>) {
+    const target = e.currentTarget as HTMLInputElement
+    console.log('triggering click')
+    setIsSustained(prevState => !prevState);
+    target.blur()
+  }
+
   return (
     <>
       <section className="keyboard">
@@ -56,8 +87,14 @@ function App() {
           color="white"
           keyboardKey={useKeyConfig[maxKeys - 1]}
           pressedKeys={pressedKeys}
+          isSustained={isSustained}
         />
       </section>
+      <Sustain
+        keyboardKey={keyboardLayouts.sustainPedal}
+        isSustained={isSustained}
+        onClick={clickSustain}
+      />
       <section id="audioList" className="audioList"></section>
     </>
   );
