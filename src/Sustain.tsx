@@ -1,5 +1,3 @@
-
-
 type SustainProps = {
   keyboardKey: string;
   isSustained: boolean;

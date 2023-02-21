@@ -19,7 +19,9 @@ export default function Note({
   isSustained,
 }: NoteProp) {
   const [isPressed, setIsPressed] = useState(false);
-  const intervalRef = useRef<number>(); //used to keep a ref to the interval 
+  const [isPlaying, setIsPlaying] = useState(false);
+  //used to keep a ref to the interval so that it can be cleared when playing note. Otherwise, when a single note is played too quickly, the fadeout function from stopNote() using an interval might kill the note just as it's played again 
+  const intervalRef = useRef<number>(); 
   const audioRef = useRef<HTMLAudioElement>();
 
   useEffect(() => {
@@ -36,6 +38,7 @@ export default function Note({
 
     if (isPressed) {
       playNote();
+      setIsPlaying(true)
     } else if (!isSustained) {
       stopNote();
     }
@@ -48,13 +51,8 @@ export default function Note({
   }, [isPressed]);
 
   useEffect(() => {
-    // if (!isSustained && !isPressed) {
-    //   if (audioRef.current) {
-    //     audioRef.current.pause();
-    //   }
-    // }
+    //need to replicate logic of stopNote but with own internal interval instead of using intervalRef since otherwise it fires even when if condition is false for some reason
     if (!isSustained && !isPressed) {
-      // stopNote();
         let fadeSpeed = 0.03;
         let minVol = 0;
         let interval = setInterval(() => {
@@ -75,6 +73,7 @@ export default function Note({
             clearInterval(interval);
           }
         }, 1);
+        setIsPlaying(false)
     }
 
     return () => {
@@ -137,12 +136,13 @@ export default function Note({
           clearInterval(intervalRef.current);
         }
       }, 1);
+      setIsPlaying(false)
   }
 
   return (
     <button
       id={`note-${note}`}
-      className={`key ${color} ${isPressed ? "active" : ""}`}
+      className={`key ${color} ${isPlaying ? "playing" : ""}`}
       onMouseDown={handleKeyPressed}
       onMouseMove={handleKeyMoved}
       onMouseUp={handleKeyReleased}

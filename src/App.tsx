@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import Note from "./Note";
 import Sustain from "./Sustain";
 import Octave from "./Octave";
+import Visualizer from "./Visualizer";
 import { keyboardLayouts } from "./keyboardLayouts";
 
 function App() {
@@ -9,14 +10,8 @@ function App() {
   const [keyLayout, setKeyLayout] = useState(
     keyboardLayouts.keyboardKeysConsecutive
   );
-  const [suscount, setsuscount] = useState(0)
   const [isSustained, setIsSustained] = useState(false);
   const allOctavesRef = useRef<JSX.Element[]>([]);
-
-  useEffect(() => {
-    setsuscount(suscount+1)
-    console.log("sustained", isSustained, suscount);
-  }, [isSustained]);
 
   let numOctaves = 3;
   let startOctave = 3;
@@ -72,14 +67,15 @@ function App() {
   }, []);
 
   function clickSustain(e: React.MouseEvent<HTMLButtonElement>) {
-    const target = e.currentTarget as HTMLInputElement
-    console.log('triggering click')
+    const target = e.currentTarget as HTMLButtonElement
     setIsSustained(prevState => !prevState);
     target.blur()
   }
 
   return (
     <>
+    {/* <section className="visualizer-container"> */}
+      <Visualizer />
       <section className="keyboard">
         {allOctavesRef.current}
         <Note
