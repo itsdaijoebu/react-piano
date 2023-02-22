@@ -15,7 +15,7 @@ function App() {
 
   const [isSustained, setIsSustained] = useState(false);
   const allOctavesRef = useRef<JSX.Element[]>([]);
-  const imagesRef = useRef<string[]>([])
+  const imagesRef = useRef<string[]>([]);
   // const addImage = useCallback((url: string) => {
   //   imagesRef.current = [...imagesRef.current, url];
   // }, []);
@@ -24,17 +24,31 @@ function App() {
   let startOctave = 3;
 
   useEffect(() => {
-    if(didInit) return
+    if (didInit) return;
     didInit = true;
     // let date = Date.now();
-    let nasaUrl = `https://api.nasa.gov/planetary/apod?api_key=${import.meta.env.VITE_NASA_KEY}`;
-    fetch(nasaUrl)
+    let nasaDailyUrl = `https://api.nasa.gov/planetary/apod?api_key=${
+      import.meta.env.VITE_NASA_KEY
+    }`;
+    let nasaMultipleUrl = `https://api.nasa.gov/planetary/apod?count=2&api_key=${
+      import.meta.env.VITE_NASA_KEY
+    }`;
+    fetch(nasaDailyUrl)
       .then((res) => res.json())
       .then((data) => {
-        // addImage(data.url)
-        let newImages = [...imagesRef.current, data.url]
+        let newImages = [data.url];
         imagesRef.current = newImages;
-        console.log(newImages)
+        console.log('just the pod', newImages);
+        return fetch(nasaMultipleUrl)
+      })
+      .then(response => response.json())
+      .then(nasaPics => {
+        let newImages = [...imagesRef.current]
+        for(let pic of nasaPics) {
+          newImages.push(pic.url)
+          imagesRef.current = newImages;
+        }
+        console.log('all images', imagesRef.current)
       })
       .catch((err) => {
         console.log(err);
@@ -121,7 +135,7 @@ function App() {
   return (
     <>
       {/* <section className="visualizer-container"> */}
-      <Visualizer images={imagesRef.current}/>
+      <Visualizer images={imagesRef.current} />
       <section className="keyboard">
         {allOctavesRef.current}
         <Note
