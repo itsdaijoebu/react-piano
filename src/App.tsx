@@ -1,20 +1,66 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import Note from "./Note";
 import Sustain from "./Sustain";
 import Octave from "./Octave";
 import Visualizer from "./Visualizer";
 import { keyboardLayouts } from "./keyboardLayouts";
 
+let didInit = false;
+
 function App() {
   const [pressedKeys, setPressedKeys] = useState(new Set<string>());
   const [keyLayout, setKeyLayout] = useState(
     keyboardLayouts.keyboardKeysConsecutive
   );
+
   const [isSustained, setIsSustained] = useState(false);
   const allOctavesRef = useRef<JSX.Element[]>([]);
+  const imagesRef = useRef<string[]>([])
+  // const addImage = useCallback((url: string) => {
+  //   imagesRef.current = [...imagesRef.current, url];
+  // }, []);
 
   let numOctaves = 3;
   let startOctave = 3;
+
+  useEffect(() => {
+    if(didInit) return
+    didInit = true;
+    // let date = Date.now();
+    let nasaUrl = `https://api.nasa.gov/planetary/apod?api_key=${import.meta.env.VITE_NASA_KEY}`;
+    fetch(nasaUrl)
+      .then((res) => res.json())
+      .then((data) => {
+        // addImage(data.url)
+        let newImages = [...imagesRef.current, data.url]
+        imagesRef.current = newImages;
+        console.log(newImages)
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+
+    const isMobile =
+      /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+        navigator.userAgent
+      );
+    if (!isMobile) return;
+    const lockOrientation = () => {
+      try {
+        screen.orientation.lock("landscape");
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    lockOrientation();
+    return () => {
+      try {
+        screen.orientation.unlock();
+      } catch (err) {
+        console.error(err);
+      }
+    };
+  }, []);
 
   /***********stuff to do with the keyboard keys***************/
 
@@ -42,7 +88,7 @@ function App() {
       }
       setPressedKeys((keys) => {
         const newKeys = new Set(keys);
-        newKeys.add(e.key);
+        newKeys.add(e.key.toLowerCase());
         return newKeys;
       });
     }
@@ -52,7 +98,7 @@ function App() {
       }
       setPressedKeys((keys) => {
         const newKeys = new Set(keys);
-        newKeys.delete(e.key);
+        newKeys.delete(e.key.toLowerCase());
         return newKeys;
       });
     }
@@ -67,15 +113,15 @@ function App() {
   }, []);
 
   function clickSustain(e: React.MouseEvent<HTMLButtonElement>) {
-    const target = e.currentTarget as HTMLButtonElement
-    setIsSustained(prevState => !prevState);
-    target.blur()
+    const target = e.currentTarget as HTMLButtonElement;
+    setIsSustained((prevState) => !prevState);
+    target.blur();
   }
 
   return (
     <>
-    {/* <section className="visualizer-container"> */}
-      <Visualizer />
+      {/* <section className="visualizer-container"> */}
+      <Visualizer images={imagesRef.current}/>
       <section className="keyboard">
         {allOctavesRef.current}
         <Note

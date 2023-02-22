@@ -19,8 +19,16 @@ body {
   justify-content: center;
   align-items: center;
   width: 100vw;
+  margin: 0;
   flex-wrap: wrap;
-  background-color: rgb(233, 229, 229);
+  /* background-color: rgb(233, 229, 229); */
+  background-color: black;
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
 }
 
 section {
@@ -71,22 +79,25 @@ button.black {
 }
 
 .key {
-  width: var(--width);
-  height: calc(var(--width) * 4);
+  --height: 20vh;
+  --width: 4vw;
+  /* width: var(--width); */
+  /* height: calc(var(--width) * 4); */
   border-radius: 0 0 5px 5px;
 }
 .white {
-  max-height: 48vh;
+  height: var(--height);
+  width: var(--width);
   background-color: var(--white);
-  --width: 4vw;
   border: 0.1rem solid black;
   color: black;
 }
 .black {
-  max-height: calc(48vh * 0.6);
+  --black-width: calc(var(--width)*0.6);
+  height: calc(var(--height) * 0.6);
+  width: var(--black-width);
   background-color: black;
-  --width: 2.4vw;
-  margin: 0 calc(var(--width) / -2);
+  margin: 0 calc(var(--black-width) / -2);
   z-index: 2;
   color: white;
 }
@@ -96,6 +107,7 @@ button.black {
 .black.playing {
   background-color: rgb(92, 90, 90);
 }
+
 /* .white.fade, .black.fade {
      transition: all 1s ease-in;
 } */
@@ -103,14 +115,11 @@ button.black {
      transition: all 1s ease-in;
 } */
 
-/******************************************
-/* UI ELEMENTS
-/*******************************************/
 .sustain {
   background-color: var(--white);
   width: 70vw;
   margin: 1rem 15vw;
-  height: 5rem;
+  height: calc(var(--height)*0.3);
   font-size: 1.5rem;
   font-weight: bold;
   border: 1px solid black;
@@ -119,6 +128,7 @@ button.black {
   align-items: center;
   justify-content: center;
   padding: 0;
+  align-self: center;
 }
 
 .sustain.playing {
@@ -127,6 +137,11 @@ button.black {
 .sustain-spacing {
   margin-left: 1rem;
 }
+
+/******************************************
+/* UI ELEMENTS
+/*******************************************/
+
 
 .letter-toggle {
   margin: 0;
@@ -144,4 +159,13 @@ button.black {
 
 .hide {
   visibility: hidden;
+}
+
+/************************************************
+/* VISUALIZER
+************************************************/
+.visualizer-console {
+  background-color: black;
+  height: 65vh;
+  background-image: url('');
 }
