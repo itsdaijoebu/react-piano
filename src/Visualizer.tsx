@@ -1,30 +1,87 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
+import { octaveBasic } from "./helpers";
 
 type VisualizerProp = {
+  keyboardStart: number;
+  numOctaves: number;
   images: string[];
 };
 
-export default function Visualizer({ images }: VisualizerProp) {
+export default function Visualizer({
+  keyboardStart,
+  numOctaves,
+  images,
+}: VisualizerProp) {
+  const observerRef = useRef<null|MutationObserver>(null)
+
+  useEffect(() => {
+    const whiteNotesBasic = octaveBasic.filter(
+      (note) => note.color === "white"
+    );
+    const whiteNotesAll: Node[] = [];
+    for (let i = keyboardStart; i < keyboardStart + numOctaves; i++) {
+      for (let key of whiteNotesBasic) {
+        let newKey = document.getElementById(`note-${key.note}${i}`) as Node;
+        if (newKey) whiteNotesAll.push(newKey);
+      }
+    }
+
+    const visSlice = document.getElementsByClassName("visualizer-slice");
+    for (let i = 0; i < visSlice.length-1; i++) {
+      const slice = visSlice[i] as HTMLElement;
+      let keyToWatch: Node;
+      if (i < visSlice.length - 1) {
+        keyToWatch = whiteNotesAll[i];
+      } else {
+        keyToWatch = document.getElementById(`note-${whiteNotesBasic[0].note}${keyboardStart+numOctaves}`) as Node;
+      }
+
+      observerRef.current = new MutationObserver((mutationList, observer) => {
+        for (let mutation of mutationList) {
+          if (
+            mutation.type === "attributes" &&
+            mutation.attributeName === "class"
+          ) {
+            const elementClass = mutation.target;
+            if (elementClass! instanceof HTMLElement) {
+              if (elementClass.classList.contains("playing")) {
+                slice.style.opacity = "0";
+              }
+              if(!elementClass.classList.contains("playing")) {
+                slice.style.opacity = "1"
+              }
+            }
+          }
+        }
+      });
+
+      observerRef.current.observe(keyToWatch, {
+        attributes: true,
+        attributeFilter: ["class"],
+      });
+    }
+
+    return () => {
+      observerRef.current?.disconnect();
+    }
+  }, []);
+
   useEffect(() => {
     const visConsole = document.getElementById(
       "visualizer-console"
     ) as HTMLDivElement;
     visConsole.style.backgroundImage = `url(${images[0]}`;
-    const visSlices = document.getElementById(
-      "visualizer-slices"
-    ) as HTMLDivElement;
-    visSlices.style.backgroundImage = `url(${images[1]})`;
+    // const visSlices = document.getElementById(
+    //   "visualizer-slices"
+    // ) as HTMLDivElement;
+    // visSlices.style.backgroundImage = `url(${images[2]})`;
     const visSlice = document.getElementsByClassName("visualizer-slice");
-    for(let i = 0; i < visSlice.length; i++) {
+    for (let i = 0; i < visSlice.length; i++) {
       const slice = visSlice[i] as HTMLElement;
-      const varWidth = getComputedStyle(slice).getPropertyValue('--width')
-      slice.style.backgroundImage = `url(${images[1]})`
-      slice.style.setProperty('left', `calc(${varWidth} * ${i})`)
-      slice.style.setProperty('background-position', `calc(-1*${varWidth}*(${i}+1)) 0`)
+      const varWidth = getComputedStyle(slice).getPropertyValue("--width");
+      slice.style.backgroundImage = `url(${images[1]})`;
+      slice.style.setProperty("left", `calc(${varWidth} * ${i})`);
     }
-
-    
-
   }, [images]);
 
   return (

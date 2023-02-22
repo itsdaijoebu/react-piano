@@ -38,7 +38,6 @@ function App() {
       .then((data) => {
         let newImages = [data.url];
         imagesRef.current = newImages;
-        console.log('just the pod', newImages);
         return fetch(nasaMultipleUrl)
       })
       .then(response => response.json())
@@ -51,7 +50,7 @@ function App() {
         console.log('all images', imagesRef.current)
       })
       .catch((err) => {
-        console.log(err);
+        console.error(err);
       });
 
     const isMobile =
@@ -135,7 +134,7 @@ function App() {
   return (
     <>
       {/* <section className="visualizer-container"> */}
-      <Visualizer images={imagesRef.current} />
+      <Visualizer keyboardStart={startOctave} numOctaves={numOctaves} images={imagesRef.current} />
       <section className="keyboard">
         {allOctavesRef.current}
         <Note
