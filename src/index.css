@@ -25,12 +25,6 @@ body {
   background-color: black;
 }
 
-#root {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-}
-
 section {
   font: inherit;
 }
@@ -80,7 +74,7 @@ button.black {
 
 .key {
   --height: 20vh;
-  --width: 4vw;
+  --width: calc(100vw/22);
   /* width: var(--width); */
   /* height: calc(var(--width) * 4); */
   border-radius: 0 0 5px 5px;
@@ -94,7 +88,7 @@ button.black {
 }
 .black {
   --black-width: calc(var(--width)*0.6);
-  height: calc(var(--height) * 0.6);
+  height: calc(var(--height) * 0.55);
   width: var(--black-width);
   background-color: black;
   margin: 0 calc(var(--black-width) / -2);
@@ -118,7 +112,7 @@ button.black {
 .sustain {
   background-color: var(--white);
   width: 70vw;
-  margin: 1rem 15vw;
+  margin: 1vw auto;
   height: calc(var(--height)*0.3);
   font-size: 1.5rem;
   font-weight: bold;
@@ -128,7 +122,6 @@ button.black {
   align-items: center;
   justify-content: center;
   padding: 0;
-  align-self: center;
 }
 
 .sustain.playing {
@@ -164,8 +157,35 @@ button.black {
 /************************************************
 /* VISUALIZER
 ************************************************/
+.visualizer-container {
+  width: 100vw;
+  height: 69vh;
+  overflow: hidden;
+  position: relative;
+}
+
 .visualizer-console {
-  background-color: black;
-  height: 65vh;
+  background-color: blue;
+  width: 200%;
+  height: 200%;
+  /* top: -50%;
+  left: -50%; */
   background-image: url('');
+  position: absolute;
+  background-size: cover;
+  background-repeat: no-repeat;
+  
+  /* animation-name: rotate-background;
+  animation-duration: 120s;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear; */
+}
+
+@keyframes rotate-background {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }

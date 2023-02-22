@@ -11,10 +11,10 @@ export default function Visualizer({images}: VisualizerProp) {
   }, [images])
 
   return (
-    <>
+    <div className="visualizer-container">
       <section className="visualizer-console" id="visualizer-console">
         <h1>visualizer</h1>
       </section>
-    </>
+    </div>
   );
 }
