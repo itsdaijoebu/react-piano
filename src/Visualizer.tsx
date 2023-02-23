@@ -12,28 +12,35 @@ export default function Visualizer({
   numOctaves,
   images,
 }: VisualizerProp) {
-  const observerRef = useRef<null|MutationObserver>(null)
+  const observerRef = useRef<null | MutationObserver>(null);
 
   useEffect(() => {
     const whiteNotesBasic = octaveBasic.filter(
       (note) => note.color === "white"
     );
     const whiteNotesAll: Node[] = [];
-    for (let i = keyboardStart; i < keyboardStart + numOctaves; i++) {
-      for (let key of whiteNotesBasic) {
-        let newKey = document.getElementById(`note-${key.note}${i}`) as Node;
+    for (let i = keyboardStart; i <= keyboardStart + numOctaves; i++) {
+      if (i < keyboardStart + numOctaves) {
+        for (let key of whiteNotesBasic) {
+          let newKey = document.getElementById(`note-${key.note}${i}`) as Node;
+          if (newKey) whiteNotesAll.push(newKey);
+        }
+      } else {
+        let newKey = document.getElementById(`note-${whiteNotesBasic[0].note}${i}`) as Node;
         if (newKey) whiteNotesAll.push(newKey);
       }
     }
 
     const visSlice = document.getElementsByClassName("visualizer-slice");
-    for (let i = 0; i < visSlice.length-1; i++) {
+    for (let i = 0; i < visSlice.length; i++) {
       const slice = visSlice[i] as HTMLElement;
       let keyToWatch: Node;
       if (i < visSlice.length - 1) {
         keyToWatch = whiteNotesAll[i];
       } else {
-        keyToWatch = document.getElementById(`note-${whiteNotesBasic[0].note}${keyboardStart+numOctaves}`) as Node;
+        keyToWatch = document.getElementById(
+          `note-${whiteNotesBasic[0].note}${keyboardStart + numOctaves}`
+        ) as Node;
       }
 
       observerRef.current = new MutationObserver((mutationList, observer) => {
@@ -47,8 +54,8 @@ export default function Visualizer({
               if (elementClass.classList.contains("playing")) {
                 slice.style.opacity = "0";
               }
-              if(!elementClass.classList.contains("playing")) {
-                slice.style.opacity = "1"
+              if (!elementClass.classList.contains("playing")) {
+                slice.style.opacity = "1";
               }
             }
           }
@@ -63,7 +70,7 @@ export default function Visualizer({
 
     return () => {
       observerRef.current?.disconnect();
-    }
+    };
   }, []);
 
   useEffect(() => {
@@ -71,6 +78,9 @@ export default function Visualizer({
       "visualizer-console"
     ) as HTMLDivElement;
     visConsole.style.backgroundImage = `url(${images[0]}`;
+    // visConsole.style.backgroundImage = `url(/assets/images/swirly-galaxy.webp`;
+    // visConsole.style.backgroundImage = `url(/assets/images/rotating-lights.webp`;
+    // visConsole.style.backgroundImage = `url(/assets/images/earth-loop.webp`;
     // const visSlices = document.getElementById(
     //   "visualizer-slices"
     // ) as HTMLDivElement;
@@ -80,6 +90,9 @@ export default function Visualizer({
       const slice = visSlice[i] as HTMLElement;
       const varWidth = getComputedStyle(slice).getPropertyValue("--width");
       slice.style.backgroundImage = `url(${images[1]})`;
+      // slice.style.backgroundImage = `url(/assets/images/swirly-galaxy.webp)`;
+      // slice.style.backgroundImage = `url(/assets/images/rotating-lights.webp)`;
+      // slice.style.backgroundImage = `url(/assets/images/earth-loop.webp)`;
       slice.style.setProperty("left", `calc(${varWidth} * ${i})`);
     }
   }, [images]);

@@ -166,13 +166,13 @@ button.black {
 }
 
 .visualizer-console {
-  background-color: blue;
+  background-color: black;
   width: 100%;
   height: 100%;
-  background-image: url('');
   position: relative;
   background-size: cover;
   background-repeat: no-repeat;
+  /* background-position: 0 -50vh; */
 }
 .visualizer-slices {
   position: absolute;
@@ -192,4 +192,6 @@ button.black {
   height: 100%;
   background-size: 100vw auto;
   background-attachment: fixed;
+  /* background-repeat: no-repeat; */
+  /* background-position: 0 -50vh; */
 }
