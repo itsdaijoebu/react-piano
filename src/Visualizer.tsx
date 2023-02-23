@@ -7,14 +7,19 @@ type VisualizerProp = {
   images: string[];
 };
 
+let isMounted = false;
+
 export default function Visualizer({
   keyboardStart,
   numOctaves,
   images,
 }: VisualizerProp) {
   const observerRef = useRef<null | MutationObserver>(null);
+  // const intervalRef = useRef<number>()
 
   useEffect(() => {
+    if(isMounted) return
+    isMounted=true;
     const whiteNotesBasic = octaveBasic.filter(
       (note) => note.color === "white"
     );
@@ -50,12 +55,24 @@ export default function Visualizer({
             mutation.attributeName === "class"
           ) {
             const elementClass = mutation.target;
+            let interval:any
             if (elementClass! instanceof HTMLElement) {
               if (elementClass.classList.contains("playing")) {
                 slice.style.opacity = "0";
+                interval = setInterval(() => {
+                  if(Number(slice.style.opacity) >= 1) {
+                    console.log('clear', interval)
+                    clearInterval(interval)
+                    return
+                  } 
+                  slice.style.opacity = String(Number(slice.style.opacity) + 0.05)
+                  console.log('opacity:', slice.style.opacity)
+                }, 100)
               }
               if (!elementClass.classList.contains("playing")) {
                 slice.style.opacity = "1";
+                console.log('stop playing')
+                clearInterval(interval)
               }
             }
           }
