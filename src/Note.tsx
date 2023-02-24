@@ -20,8 +20,8 @@ export default function Note({
 }: NoteProp) {
   const [isPressed, setIsPressed] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
-  //used to keep a ref to the interval so that it can be cleared when playing note. Otherwise, when a single note is played too quickly, the fadeout function from stopNote() using an interval might kill the note just as it's played again 
-  const intervalRef = useRef<number>(); 
+  //used to keep a ref to the interval so that it can be cleared when playing note. Otherwise, when a single note is played too quickly, the fadeout function from stopNote() using an interval might kill the note just as it's played again
+  const intervalRef = useRef<number>();
   const audioRef = useRef<HTMLAudioElement>();
 
   useEffect(() => {
@@ -38,7 +38,7 @@ export default function Note({
 
     if (isPressed) {
       playNote();
-      setIsPlaying(true)
+      setIsPlaying(true);
     } else if (!isSustained) {
       stopNote();
     }
@@ -53,27 +53,27 @@ export default function Note({
   useEffect(() => {
     //need to replicate logic of stopNote but with own internal interval instead of using intervalRef since otherwise it fires even when if condition is false for some reason
     if (!isSustained && !isPressed) {
-        let fadeSpeed = 0.03;
-        let minVol = 0;
-        let interval = setInterval(() => {
-          if (!audioRef.current) return;
-  
-          //prevent the volume from going below 0
-          if (
-            audioRef.current.volume > minVol &&
-            audioRef.current.volume < fadeSpeed
-          ) {
-            audioRef.current.volume = fadeSpeed;
-          }
-  
-          if (audioRef.current.volume > minVol) {
-            audioRef.current.volume -= fadeSpeed;
-          } else {
-            audioRef.current.pause();
-            clearInterval(interval);
-          }
-        }, 1);
-        setIsPlaying(false)
+      let stopFadeSpeed = 0.03;
+      let minVol = 0;
+      let interval = setInterval(() => {
+        if (!audioRef.current) return;
+
+        //prevent the volume from going below 0
+        if (
+          audioRef.current.volume > minVol &&
+          audioRef.current.volume < stopFadeSpeed
+        ) {
+          audioRef.current.volume = stopFadeSpeed;
+        }
+
+        if (audioRef.current.volume > minVol) {
+          audioRef.current.volume -= stopFadeSpeed;
+        } else {
+          audioRef.current.pause();
+          clearInterval(interval);
+        }
+      }, 1);
+      setIsPlaying(false);
     }
 
     return () => {
@@ -107,36 +107,54 @@ export default function Note({
 
   function playNote() {
     if (!audioRef.current) return;
+
+    let playFadeSpeed = 0.02;
+
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
     }
     audioRef.current.currentTime = 0;
     audioRef.current.volume = 1;
     audioRef.current.play();
+    let fadeNote = setInterval(() => {
+      if (!audioRef.current) return;
+      if (audioRef.current.currentTime <= 0) {
+        clearInterval(fadeNote);
+        return;
+      }
+      if (audioRef.current.volume > 0) {
+        if (audioRef.current.volume > playFadeSpeed) {
+          audioRef.current.volume -= playFadeSpeed
+        } else {
+          audioRef.current.pause();
+          clearInterval(fadeNote);
+        }
+      }
+    }, 100);
   }
 
   function stopNote() {
-      let fadeSpeed = 0.03;
-      let minVol = 0;
-      intervalRef.current = setInterval(() => {
-        if (!audioRef.current) return;
+    let stopFadeSpeed = 0.03;
+    let minVol = 0;
+    intervalRef.current = setInterval(() => {
+      if (!audioRef.current) return;
 
-        //prevent the volume from going below 0
-        if (
-          audioRef.current.volume > minVol &&
-          audioRef.current.volume < fadeSpeed
-        ) {
-          audioRef.current.volume = fadeSpeed;
-        }
+      //prevent the volume from going below 0
+      if (
+        audioRef.current.volume > minVol &&
+        audioRef.current.volume < stopFadeSpeed
+      ) {
+        audioRef.current.volume = stopFadeSpeed;
+      }
 
-        if (audioRef.current.volume > minVol) {
-          audioRef.current.volume -= fadeSpeed;
-        } else {
-          audioRef.current.pause();
-          clearInterval(intervalRef.current);
-        }
-      }, 1);
-      setIsPlaying(false)
+      if (audioRef.current.volume > minVol) {
+        audioRef.current.volume -= stopFadeSpeed;
+      } else {
+        audioRef.current.pause();
+        clearInterval(intervalRef.current);
+      }
+    }, 1);
+    setIsPlaying(false);
   }
 
   return (

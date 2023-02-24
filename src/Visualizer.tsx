@@ -55,23 +55,22 @@ export default function Visualizer({
             mutation.attributeName === "class"
           ) {
             const elementClass = mutation.target;
-            let interval:any
+            let interval = 0;
+            let visFadeSpeed = 0.01;
             if (elementClass! instanceof HTMLElement) {
               if (elementClass.classList.contains("playing")) {
                 slice.style.opacity = "0";
                 interval = setInterval(() => {
                   if(Number(slice.style.opacity) >= 1) {
-                    console.log('clear', interval)
                     clearInterval(interval)
                     return
                   } 
-                  slice.style.opacity = String(Number(slice.style.opacity) + 0.05)
-                  console.log('opacity:', slice.style.opacity)
+                  slice.style.opacity = String(Number(slice.style.opacity) + visFadeSpeed)
+                  // console.log('opacity:', slice.style.opacity)
                 }, 100)
               }
               if (!elementClass.classList.contains("playing")) {
                 slice.style.opacity = "1";
-                console.log('stop playing')
                 clearInterval(interval)
               }
             }
@@ -106,10 +105,10 @@ export default function Visualizer({
     for (let i = 0; i < visSlice.length; i++) {
       const slice = visSlice[i] as HTMLElement;
       const varWidth = getComputedStyle(slice).getPropertyValue("--width");
-      slice.style.backgroundImage = `url(${images[1]})`;
+      // slice.style.backgroundImage = `url(${images[1]})`;
       // slice.style.backgroundImage = `url(/assets/images/swirly-galaxy.webp)`;
       // slice.style.backgroundImage = `url(/assets/images/rotating-lights.webp)`;
-      // slice.style.backgroundImage = `url(/assets/images/earth-loop.webp)`;
+      slice.style.backgroundImage = `url(/assets/images/earth-loop.webp)`;
       slice.style.setProperty("left", `calc(${varWidth} * ${i})`);
     }
   }, [images]);
