@@ -17,6 +17,7 @@ function App() {
   const [isSustained, setIsSustained] = useState(false);
   const allOctavesRef = useRef<JSX.Element[]>([]);
   const imagesRef = useRef<string[]>([]);
+  const notesRef = useRef<HTMLButtonElement[]>([])
   // const addImage = useCallback((url: string) => {
   //   imagesRef.current = [...imagesRef.current, url];
   // }, []);
@@ -91,6 +92,7 @@ function App() {
         pressedKeys={pressedKeys}
         keyboardKey={keyLayout[i]}
         isSustained={isSustained}
+        ref={(e:HTMLButtonElement) => notesRef.current[i] = e}
       />
     ));
 
@@ -143,6 +145,7 @@ function App() {
         keyboardStart={startOctave}
         numOctaves={numOctaves}
         images={imagesRef.current}
+        notesRef={notesRef.current}
       />
       <section className="keyboard">
         {allOctavesRef.current}
@@ -152,6 +155,7 @@ function App() {
           keyboardKey={keyLayout[keyLayout.length-1]}
           pressedKeys={pressedKeys}
           isSustained={isSustained}
+          ref={(e:HTMLButtonElement) => notesRef.current[keyLayout.length-1] = e}
         />
       </section>
       <Sustain
