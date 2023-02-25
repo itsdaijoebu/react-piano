@@ -38,16 +38,16 @@ function App() {
       .then((data) => {
         let newImages = [data.url];
         imagesRef.current = newImages;
-        return fetch(nasaMultipleUrl)
+        return fetch(nasaMultipleUrl);
       })
-      .then(response => response.json())
-      .then(nasaPics => {
-        let newImages = [...imagesRef.current]
-        for(let pic of nasaPics) {
-          newImages.push(pic.url)
+      .then((response) => response.json())
+      .then((nasaPics) => {
+        let newImages = [...imagesRef.current];
+        for (let pic of nasaPics) {
+          newImages.push(pic.url);
           imagesRef.current = newImages;
         }
-        console.log('all images', imagesRef.current)
+        console.log("all images", imagesRef.current);
       })
       .catch((err) => {
         console.error(err);
@@ -99,21 +99,25 @@ function App() {
       if (e.key === " ") {
         setIsSustained(true);
       }
-      setPressedKeys((keys) => {
-        const newKeys = new Set(keys);
-        newKeys.add(e.key.toLowerCase());
-        return newKeys;
-      });
+      if (keyLayout.includes(e.key)) {
+        setPressedKeys((keys) => {
+          const newKeys = new Set(keys);
+          newKeys.add(e.key.toLowerCase());
+          return newKeys;
+        });
+      }
     }
     function handleKeyUp(e: KeyboardEvent) {
       if (e.key === " ") {
         setIsSustained(false);
       }
-      setPressedKeys((keys) => {
-        const newKeys = new Set(keys);
-        newKeys.delete(e.key.toLowerCase());
-        return newKeys;
-      });
+      if (keyLayout.includes(e.key)) {
+        setPressedKeys((keys) => {
+          const newKeys = new Set(keys);
+          newKeys.delete(e.key.toLowerCase());
+          return newKeys;
+        });
+      }
     }
 
     window.addEventListener("keydown", handleKeyDown);
@@ -134,7 +138,11 @@ function App() {
   return (
     <>
       {/* <section className="visualizer-container"> */}
-      <Visualizer keyboardStart={startOctave} numOctaves={numOctaves} images={imagesRef.current} />
+      <Visualizer
+        keyboardStart={startOctave}
+        numOctaves={numOctaves}
+        images={imagesRef.current}
+      />
       <section className="keyboard">
         {allOctavesRef.current}
         <Note

@@ -127,7 +127,6 @@ export default function Note({
       if (audioRef.current.volume > 0) {
         if (audioRef.current.volume > playFadeSpeed) {
           audioRef.current.volume -= playFadeSpeed
-          console.log('vol', audioRef.current.volume, audioRef.current.currentTime, audioRef.current.duration)
         } else {
           clearInterval(intervalRefPlay.current);
           if(!isPressed) {

@@ -64,7 +64,6 @@ export default function Visualizer({
                     return
                   } 
                   slice.style.opacity = String(Number(slice.style.opacity) + visFadeSpeed)
-                  // console.log('opacity:', slice.style.opacity)
                 }, 100)
               }
               if (!elementClass.classList.contains("playing")) {
@@ -102,11 +101,11 @@ export default function Visualizer({
     const visSlice = document.getElementsByClassName("visualizer-slice");
     for (let i = 0; i < visSlice.length; i++) {
       const slice = visSlice[i] as HTMLElement;
-      const varWidth = getComputedStyle(slice).getPropertyValue("--width");
       // slice.style.backgroundImage = `url(${images[1]})`;
       // slice.style.backgroundImage = `url(/assets/images/swirly-galaxy.webp)`;
       // slice.style.backgroundImage = `url(/assets/images/rotating-lights.webp)`;
       slice.style.backgroundImage = `url(/assets/images/earth-loop.webp)`;
+      // const varWidth = getComputedStyle(slice).getPropertyValue("--width");
       // slice.style.setProperty("left", `calc(${varWidth} * ${i})`);
     }
   }, [images]);
