@@ -4,6 +4,7 @@ import Sustain from "./Sustain";
 import Octave from "./Octave";
 import Visualizer from "./Visualizer";
 import { keyboardLayouts } from "./keyboardLayouts";
+import { octaveBasic } from "./helpers";
 
 let didInit = false;
 
@@ -77,19 +78,19 @@ function App() {
 
   /***********stuff to do with the keyboard keys***************/
 
-  const maxKeys = keyboardLayouts.keyboardKeysSplit.length;
-  let useKeyConfig = keyboardLayouts.keyboardKeysSplit;
+  // let useKeyConfig = keyboardLayouts.keyboardKeysSplit;
+  const octaveLength = octaveBasic.length
 
-  allOctavesRef.current = Array(numOctaves)
+  allOctavesRef.current = Array(numOctaves*octaveLength)
     .fill(null)
     .map((_, i) => (
-      <Octave
-        keyboardStart={startOctave}
-        keyboardLayout={keyLayout}
-        octaveNum={startOctave + i}
+      <Note
+        key={`note-${i}`}
+        note={`${octaveBasic[i%octaveLength].note}${Math.floor(i/octaveLength)+startOctave}`}
+        color={`${octaveBasic[i%octaveLength].color}`}
         pressedKeys={pressedKeys}
+        keyboardKey={keyLayout[i]}
         isSustained={isSustained}
-        key={`octave-${i}`}
       />
     ));
 
@@ -148,7 +149,7 @@ function App() {
         <Note
           note={`C${numOctaves + startOctave}`}
           color="white"
-          keyboardKey={useKeyConfig[maxKeys - 1]}
+          keyboardKey={keyLayout[keyLayout.length-1]}
           pressedKeys={pressedKeys}
           isSustained={isSustained}
         />

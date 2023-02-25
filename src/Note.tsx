@@ -1,6 +1,6 @@
 // to-do: get keyboard bindings working. Was implementing ability to pass keyboard keys as a prop - got the vars down, now need to actually pass in from app.tsx
 
-import { useState, useEffect, useRef, MouseEvent } from "react";
+import { useState, useEffect, useRef, MouseEvent, forwardRef, LegacyRef } from "react";
 import { NoteType } from "./helpers";
 
 type NoteProp = {
@@ -11,13 +11,13 @@ type NoteProp = {
   isSustained: boolean;
 };
 
-export default function Note({
+const Note = forwardRef(({
   note,
   color,
   pressedKeys,
   keyboardKey,
   isSustained,
-}: NoteProp) {
+}: NoteProp, ref) => {
   const [isPressed, setIsPressed] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   //used to keep a ref to the interval so that it can be cleared when playing note. Otherwise, when a single note is played too quickly, the fadeout function from stopNote() using an interval might kill the note just as it's played again
@@ -164,13 +164,16 @@ export default function Note({
   return (
     <button
       id={`note-${note}`}
-      className={`key ${color} ${isPlaying ? "playing" : ""}`}
+      className={`key ${color} ${isPlaying ? "playing" : ""} ${isPressed? "pressed" : ""}`}
       onMouseDown={handleKeyPressed}
       onMouseMove={handleKeyMoved}
       onMouseUp={handleKeyReleased}
       onMouseLeave={handleKeyReleased}
+      ref={ref as LegacyRef<HTMLButtonElement>}
     >
       <span className="toggleable-text">{keyboardKey || note}</span>
     </button>
   );
-}
+})
+
+export default Note

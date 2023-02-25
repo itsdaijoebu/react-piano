@@ -15,7 +15,8 @@ export default function Visualizer({
   images,
 }: VisualizerProp) {
   const observerRef = useRef<null | MutationObserver>(null);
-
+  const visSlices = useRef([])
+  
   useEffect(() => {
     if(isMounted) return
     isMounted=true;
