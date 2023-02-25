@@ -86,13 +86,16 @@ button.black {
   border: 0.1rem solid black;
   color: black;
 }
-.black {
+.black,
+.visualizer-slice.black {
   --black-width: calc(var(--width)*0.6);
-  height: calc(var(--height) * 0.55);
   width: var(--black-width);
-  background-color: black;
   margin: 0 calc(var(--black-width) / -2);
   z-index: 2;
+}
+button.black {
+  height: calc(var(--height) * 0.55);
+  background-color: black;
   color: white;
 }
 .white.playing {
@@ -159,6 +162,7 @@ button.black {
 ************************************************/
 .visualizer-container {
   --vis-height: 69vh;
+  --vis-width: calc(100vw/37);
   width: 100vw;
   height: var(--vis-height);
   overflow: hidden;
@@ -169,26 +173,27 @@ button.black {
   background-color: black;
   width: 100%;
   height: 100%;
-  position: relative;
+  /* position: relative; */
   background-size: cover;
   background-repeat: no-repeat;
   /* background-position: 0 -50vh; */
 }
 .visualizer-slices {
   position: absolute;
-  inset: 0;
-  width: 100%;
+  /* inset: 0; */
+  width: 100vw;
   height: 100%;
   background-size: cover;
   background-repeat: no-repeat;
   background-color: transparent;
   background-position: 0 0;
+  display: flex;
 }
 .visualizer-slice {
-  position: absolute;
+  /* position: absolute; */
   border-radius: 0;
   background-color: black; 
-  width: var(--width);
+  width: var(--vis-width);
   height: 100%;
   background-size: 100vw auto;
   background-attachment: fixed;

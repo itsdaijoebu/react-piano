@@ -5,6 +5,7 @@ type VisualizerProp = {
   keyboardStart: number;
   numOctaves: number;
   images: string[];
+  visualizerStyle: 'string';
 };
 
 let isMounted = false;
@@ -15,22 +16,25 @@ export default function Visualizer({
   images,
 }: VisualizerProp) {
   const observerRef = useRef<null | MutationObserver>(null);
+  // const intervalRef = useRef<number>()
 
   useEffect(() => {
     if(isMounted) return
     isMounted=true;
-    const allNotes: Node[] = [];
-    const maxSlices = 10; //the max number of slices that can go transparent when a key is pressed
+    const whiteNotesBasic = octaveBasic.filter(
+      (note) => note.color === "white"
+    );
+    const whiteNotesAll: Node[] = [];
     
     for (let i = keyboardStart; i <= keyboardStart + numOctaves; i++) {
       if (i < keyboardStart + numOctaves) {
-        for (let key of octaveBasic) {
+        for (let key of whiteNotesBasic) {
           let newKey = document.getElementById(`note-${key.note}${i}`) as Node;
-          if (newKey) allNotes.push(newKey);
+          if (newKey) whiteNotesAll.push(newKey);
         }
       } else {
-        let newKey = document.getElementById(`note-${octaveBasic[0].note}${i}`) as Node;
-        if (newKey) allNotes.push(newKey);
+        let newKey = document.getElementById(`note-${whiteNotesBasic[0].note}${i}`) as Node;
+        if (newKey) whiteNotesAll.push(newKey);
       }
     }
 
@@ -39,10 +43,10 @@ export default function Visualizer({
       const slice = visSlice[i] as HTMLElement;
       let keyToWatch: Node;
       if (i < visSlice.length - 1) {
-        keyToWatch = allNotes[i];
+        keyToWatch = whiteNotesAll[i];
       } else {
         keyToWatch = document.getElementById(
-          `note-${octaveBasic[0].note}${keyboardStart + numOctaves}`
+          `note-${whiteNotesBasic[0].note}${keyboardStart + numOctaves}`
         ) as Node;
       }
 
@@ -55,7 +59,7 @@ export default function Visualizer({
             const elementClass = mutation.target;
             let interval = 0;
             let visFadeSpeed = 0.01;
-            if (elementClass instanceof HTMLElement) {
+            if (elementClass! instanceof HTMLElement) {
               if (elementClass.classList.contains("playing")) {
                 slice.style.opacity = "0";
                 interval = setInterval(() => {
@@ -107,7 +111,7 @@ export default function Visualizer({
       // slice.style.backgroundImage = `url(/assets/images/swirly-galaxy.webp)`;
       // slice.style.backgroundImage = `url(/assets/images/rotating-lights.webp)`;
       slice.style.backgroundImage = `url(/assets/images/earth-loop.webp)`;
-      // slice.style.setProperty("left", `calc(${varWidth} * ${i})`);
+      slice.style.setProperty("left", `calc(${varWidth} * ${i})`);
     }
   }, [images]);
 
@@ -115,43 +119,28 @@ export default function Visualizer({
     <div className="visualizer-container">
       <section className="visualizer-console" id="visualizer-console">
         <div className="visualizer-slices" id="visualizer-slices">
-          <div className="visualizer-slice" id="visualizerslice1"></div>
-          <div className="visualizer-slice" id="visualizerslice2"></div>
-          <div className="visualizer-slice" id="visualizerslice3"></div>
-          <div className="visualizer-slice" id="visualizerslice4"></div>
-          <div className="visualizer-slice" id="visualizerslice5"></div>
-          <div className="visualizer-slice" id="visualizerslice6"></div>
-          <div className="visualizer-slice" id="visualizerslice7"></div>
-          <div className="visualizer-slice" id="visualizerslice8"></div>
-          <div className="visualizer-slice" id="visualizerslice9"></div>
-          <div className="visualizer-slice" id="visualizerslice10"></div>
-          <div className="visualizer-slice" id="visualizerslice11"></div>
-          <div className="visualizer-slice" id="visualizerslice12"></div>
-          <div className="visualizer-slice" id="visualizerslice13"></div>
-          <div className="visualizer-slice" id="visualizerslice14"></div>
-          <div className="visualizer-slice" id="visualizerslice15"></div>
-          <div className="visualizer-slice" id="visualizerslice16"></div>
-          <div className="visualizer-slice" id="visualizerslice17"></div>
-          <div className="visualizer-slice" id="visualizerslice18"></div>
-          <div className="visualizer-slice" id="visualizerslice19"></div>
-          <div className="visualizer-slice" id="visualizerslice20"></div>
-          <div className="visualizer-slice" id="visualizerslice21"></div>
-          <div className="visualizer-slice" id="visualizerslice22"></div>
-          <div className="visualizer-slice" id="visualizerslice23"></div>
-          <div className="visualizer-slice" id="visualizerslice24"></div>
-          <div className="visualizer-slice" id="visualizerslice25"></div>
-          <div className="visualizer-slice" id="visualizerslice26"></div>
-          <div className="visualizer-slice" id="visualizerslice27"></div>
-          <div className="visualizer-slice" id="visualizerslice28"></div>
-          <div className="visualizer-slice" id="visualizerslice29"></div>
-          <div className="visualizer-slice" id="visualizerslice30"></div>
-          <div className="visualizer-slice" id="visualizerslice31"></div>
-          <div className="visualizer-slice" id="visualizerslice32"></div>
-          <div className="visualizer-slice" id="visualizerslice33"></div>
-          <div className="visualizer-slice" id="visualizerslice34"></div>
-          <div className="visualizer-slice" id="visualizerslice35"></div>
-          <div className="visualizer-slice" id="visualizerslice36"></div>
-          <div className="visualizer-slice" id="visualizerslice37"></div>
+          <div className="visualizer-slice key" id="visualizer-slice1"></div>
+          <div className="visualizer-slice key" id="visualizer-slice2"></div>
+          <div className="visualizer-slice key" id="visualizer-slice3"></div>
+          <div className="visualizer-slice key" id="visualizer-slice4"></div>
+          <div className="visualizer-slice key" id="visualizer-slice5"></div>
+          <div className="visualizer-slice key" id="visualizer-slice6"></div>
+          <div className="visualizer-slice key" id="visualizer-slice7"></div>
+          <div className="visualizer-slice key" id="visualizer-slice8"></div>
+          <div className="visualizer-slice key" id="visualizer-slice9"></div>
+          <div className="visualizer-slice key" id="visualizer-slice10"></div>
+          <div className="visualizer-slice key" id="visualizer-slice11"></div>
+          <div className="visualizer-slice key" id="visualizer-slice12"></div>
+          <div className="visualizer-slice key" id="visualizer-slice13"></div>
+          <div className="visualizer-slice key" id="visualizer-slice14"></div>
+          <div className="visualizer-slice key" id="visualizer-slice15"></div>
+          <div className="visualizer-slice key" id="visualizer-slice16"></div>
+          <div className="visualizer-slice key" id="visualizer-slice17"></div>
+          <div className="visualizer-slice key" id="visualizer-slice18"></div>
+          <div className="visualizer-slice key" id="visualizer-slice19"></div>
+          <div className="visualizer-slice key" id="visualizer-slice20"></div>
+          <div className="visualizer-slice key" id="visualizer-slice21"></div>
+          <div className="visualizer-slice key" id="visualizer-slice22"></div>
         </div>
       </section>
     </div>
