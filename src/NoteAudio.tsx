@@ -14,6 +14,7 @@ export default function NoteAudio({ octaveNum }: AudioProp) {
               src={`/assets/sounds/default/${thisNote}.mp3`}
               key={`audio-${thisNote}`}
               id={`audio-${thisNote}`}
+              preload='auto'
             ></audio>
         );
       })}

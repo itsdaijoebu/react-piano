@@ -24,6 +24,7 @@ function App() {
 
   let numOctaves = 3;
   let startOctave = 3;
+  let fadeSpeed = 0.01;
 
   useEffect(() => {
     if (didInit) return;
@@ -82,7 +83,7 @@ function App() {
   // let useKeyConfig = keyboardLayouts.keyboardKeysSplit;
   const octaveLength = octaveBasic.length
 
-  allOctavesRef.current = Array(numOctaves*octaveLength)
+  allOctavesRef.current = Array(numOctaves*octaveLength+1)
     .fill(null)
     .map((_, i) => (
       <Note
@@ -92,6 +93,7 @@ function App() {
         pressedKeys={pressedKeys}
         keyboardKey={keyLayout[i]}
         isSustained={isSustained}
+        playFadeSpeed={fadeSpeed}
         ref={(e:HTMLButtonElement) => notesRef.current[i] = e}
       />
     ));
@@ -146,17 +148,10 @@ function App() {
         numOctaves={numOctaves}
         images={imagesRef.current}
         notesRef={notesRef.current}
+        visFadeSpeed={fadeSpeed}
       />
       <section className="keyboard">
         {allOctavesRef.current}
-        <Note
-          note={`C${numOctaves + startOctave}`}
-          color="white"
-          keyboardKey={keyLayout[keyLayout.length-1]}
-          pressedKeys={pressedKeys}
-          isSustained={isSustained}
-          ref={(e:HTMLButtonElement) => notesRef.current[keyLayout.length-1] = e}
-        />
       </section>
       <Sustain
         keyboardKey={keyboardLayouts.sustainPedal}

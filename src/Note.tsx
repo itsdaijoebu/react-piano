@@ -9,6 +9,7 @@ type NoteProp = {
   pressedKeys: Set<string>;
   keyboardKey: string;
   isSustained: boolean;
+  playFadeSpeed: number;
 };
 
 const Note = forwardRef(({
@@ -17,6 +18,7 @@ const Note = forwardRef(({
   pressedKeys,
   keyboardKey,
   isSustained,
+  playFadeSpeed
 }: NoteProp, ref) => {
   const [isPressed, setIsPressed] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -118,7 +120,6 @@ const Note = forwardRef(({
     audioRef.current.volume = 1;
     audioRef.current.play();
     intervalRefPlay.current = setInterval(() => {
-      let playFadeSpeed = 0.02
       if(!audioRef.current) {
         clearInterval(intervalRefPlay.current)
         return
