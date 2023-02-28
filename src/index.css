@@ -4,8 +4,11 @@
   box-sizing: border-box;
   font-size: 62.5%;
 
-  --white: rgb(255, 251, 251);
-  --white-active: #ccc;
+  --white: rgb(245, 244, 242);
+  --white-active: rgb(120, 120, 120);
+  --white-pressed: rgb(180,180,180);
+  --black-active: rgb(100, 100, 100); 
+  --black-pressed: rgb(50, 50, 50); 
 
   cursor: default;
 }
@@ -98,20 +101,29 @@ button.black {
   background-color: black;
   color: white;
 }
+.white.pressed{
+  background-color: var(--white-pressed)
+}
+.black.pressed{
+  background-color: var(--black-pressed)
+}
+.playing{
+  animation-duration: 8s;
+}
 .white.playing {
-  background-color: var(--white-active);
+  animation-name: white-playing;
 }
 .black.playing {
-  background-color: rgb(92, 90, 90);
+  animation-name: black-playing;
 }
-
-/* .white.fade, .black.fade {
-     transition: all 1s ease-in;
-} */
-/*.fade {
-     transition: all 1s ease-in;
-} */
-
+@keyframes white-playing {
+  from {background-color: var(--white-active);}
+  to {background-color: var(--white-pressed);}
+}
+@keyframes black-playing {
+  from {background-color: var(--black-active);}
+  to {background-color: var(--black-pressed);}
+}
 .sustain {
   background-color: var(--white);
   width: 70vw;

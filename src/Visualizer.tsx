@@ -25,10 +25,10 @@ export default function Visualizer({
     if (isMounted) return;
     isMounted = true;
     const maxSlices = 8; //the max number of slices that can go transparent when a key is pressed
-    // const intervalStore:{[key:string]:number} = {}
-    const intervalStore:Map<HTMLElement, number> = new Map(); //store intervals of each slice 
-    const noteOfSlice:Map<HTMLElement, HTMLElement> = new Map(); // key: slice, value: note
-    const slicesOfNote:Map<HTMLElement, HTMLElement[]> = new Map(); // key: note, value: slices => when note is released, go through all slices and check if noteOfSlice equals this note
+    const intervalStore: Map<HTMLDivElement, number> = new Map(); //store the interval of each slice so that they can be properly cleared when the interval is released
+    //store the note associated with each slice. Allows us to update the note associated with the slice without having to search through all the slicesOfNote. Without this, the interval of a given note may be prematurely cleared
+    const noteOfSlice: Map<HTMLDivElement, HTMLButtonElement> = new Map();
+    const slicesOfNote: Map<HTMLButtonElement, HTMLDivElement[]> = new Map(); // store the slices associated with each note
 
     for (let i = 0; i < visSlices.current.length; i++) {
       let keyToWatch = notesRef[i];
@@ -39,9 +39,11 @@ export default function Visualizer({
           mutation.attributeName === "class"
         ) {
           const keyboardKey = mutation.target;
-          if (keyboardKey instanceof HTMLElement) {
+          if (keyboardKey instanceof HTMLButtonElement) {
             if (keyboardKey.classList.contains("pressed")) {
-              const numSlicesToUse = Math.floor(Math.random() * (maxSlices-1) + 1)
+              const numSlicesToUse = Math.floor(
+                Math.random() * (maxSlices - 1) + 1
+              );
               for (let i = 0; i < numSlicesToUse; i++) {
                 const randSlice =
                   visSlices.current[
@@ -57,28 +59,27 @@ export default function Visualizer({
                     Number(randSlice.style.opacity) + visFadeSpeed
                   );
                 }, 100);
-                const slicesOnNote = slicesOfNote.get(keyboardKey) || []
-                slicesOnNote.push(randSlice)
-                slicesOfNote.set(keyboardKey, slicesOnNote)
-                noteOfSlice.set(randSlice, keyboardKey)
-                intervalStore.set(randSlice, interval)
+                const slicesOnNote = slicesOfNote.get(keyboardKey) || [];
+                slicesOnNote.push(randSlice);
+                slicesOfNote.set(keyboardKey, slicesOnNote);
+                noteOfSlice.set(randSlice, keyboardKey);
+                intervalStore.set(randSlice, interval);
                 // const intervalArr = intervalStore.get(keyboardKey) || []
                 // intervalArr.push(interval)
                 // intervalStore.set(keyboardKey, intervalArr)
               }
-              console.log(slicesOfNote.get(keyboardKey))
             }
             if (!keyboardKey.classList.contains("playing")) {
               // const slices = slicesOfNote.get(keyboardKey) || []
-              const slices = slicesOfNote.get(keyboardKey)
-              if(!slices) return
-              for(let slice of slices) {
-                if(noteOfSlice.get(slice) === keyboardKey) {
-                  clearInterval(intervalStore.get(slice))
-                  slice.style.opacity = '1'
-                  intervalStore.delete(slice)
-                  noteOfSlice.delete(slice)
-                  slicesOfNote.delete(keyboardKey)
+              const slices = slicesOfNote.get(keyboardKey);
+              if (!slices) return;
+              for (let slice of slices) {
+                if (noteOfSlice.get(slice) === keyboardKey) {
+                  clearInterval(intervalStore.get(slice));
+                  slice.style.opacity = "1";
+                  intervalStore.delete(slice);
+                  noteOfSlice.delete(slice);
+                  slicesOfNote.delete(keyboardKey);
                 }
               }
               // const intervals = intervalStore.get(keyboardKey) || []
