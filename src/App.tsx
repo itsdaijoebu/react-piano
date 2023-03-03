@@ -141,7 +141,6 @@ function App() {
 
   return (
     <>
-    <h1>{import.meta.env.VITE_TEST_VAR}</h1>
       <Visualizer
         keyboardStart={startOctave}
         numOctaves={numOctaves}
