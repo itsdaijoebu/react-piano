@@ -25,8 +25,7 @@ export default function Visualizer({
     if (isMounted) return;
     isMounted = true;
     const maxSlices = 8; //the max number of slices that can go transparent when a key is pressed
-    const intervalStore: Map<HTMLDivElement, number> = new Map(); //store the interval of each slice so that they can be properly cleared when the interval is released
-    //store the note associated with each slice. Allows us to update the note associated with the slice without having to search through all the slicesOfNote. Without this, the interval of a given note may be prematurely cleared
+    //store the note associated with each slice. Allows us to update the note associated with the slice without having to search through all the slicesOfNote and delete the slice from the associated note if a slice gets selected by a new note while activated by another (older) note
     const noteOfSlice: Map<HTMLDivElement, HTMLButtonElement> = new Map();
     const slicesOfNote: Map<HTMLButtonElement, HTMLDivElement[]> = new Map(); // store the slices associated with each note
 
@@ -49,44 +48,33 @@ export default function Visualizer({
                   visSlices.current[
                     Math.floor(Math.random() * visSlices.current.length)
                   ];
-                randSlice.style.opacity = "0";
-                let interval = setInterval(() => {
-                  if (Number(randSlice.style.opacity) >= 0.5) {
-                    // clearInterval(interval);
-                    return;
-                  }
-                  randSlice.style.opacity = String(
-                    Number(randSlice.style.opacity) + visFadeSpeed
-                  );
-                }, 100);
+                randSlice.classList.add('playing')
+                randSlice.classList.add('pressed')
                 const slicesOnNote = slicesOfNote.get(keyboardKey) || [];
                 slicesOnNote.push(randSlice);
                 slicesOfNote.set(keyboardKey, slicesOnNote);
                 noteOfSlice.set(randSlice, keyboardKey);
-                intervalStore.set(randSlice, interval);
-                // const intervalArr = intervalStore.get(keyboardKey) || []
-                // intervalArr.push(interval)
-                // intervalStore.set(keyboardKey, intervalArr)
+              }
+            }
+            if(!keyboardKey.classList.contains("pressed")) {
+              const slices = slicesOfNote.get(keyboardKey);
+              if(!slices) return
+              for(let slice of slices) {
+                if(noteOfSlice.get(slice) === keyboardKey) {
+                  slice.classList.remove('pressed')
+                }
               }
             }
             if (!keyboardKey.classList.contains("playing")) {
-              // const slices = slicesOfNote.get(keyboardKey) || []
               const slices = slicesOfNote.get(keyboardKey);
               if (!slices) return;
               for (let slice of slices) {
                 if (noteOfSlice.get(slice) === keyboardKey) {
-                  clearInterval(intervalStore.get(slice));
-                  slice.style.opacity = "1";
-                  intervalStore.delete(slice);
                   noteOfSlice.delete(slice);
                   slicesOfNote.delete(keyboardKey);
+                  slice.classList.remove('playing')
                 }
               }
-              // const intervals = intervalStore.get(keyboardKey) || []
-              // for(let interval of intervals) {
-              //   clearInterval(interval)
-              // }
-              // intervalStore.delete(keyboardKey)
             }
           }
         }
@@ -111,9 +99,6 @@ export default function Visualizer({
     // visConsole.style.backgroundImage = `url(/assets/images/swirly-galaxy.webp`;
     // visConsole.style.backgroundImage = `url(/assets/images/rotating-lights.webp`;
     // visConsole.style.backgroundImage = `url(/assets/images/earth-loop.webp`;
-    // const visSlices = document.getElementById(
-    //   "visualizer-slices"
-    // ) as HTMLDivElement;
     // visSlices.style.backgroundImage = `url(${images[2]})`;
     const visSlice = document.getElementsByClassName("visualizer-slice");
     for (let i = 0; i < visSlice.length; i++) {
@@ -122,8 +107,6 @@ export default function Visualizer({
       // slice.style.backgroundImage = `url(/assets/images/swirly-galaxy.webp)`;
       // slice.style.backgroundImage = `url(/assets/images/rotating-lights.webp)`;
       slice.style.backgroundImage = `url(/assets/images/earth-loop.webp)`;
-      // const varWidth = getComputedStyle(slice).getPropertyValue("--width");
-      // slice.style.setProperty("left", `calc(${varWidth} * ${i})`);
     }
   }, [images]);
 

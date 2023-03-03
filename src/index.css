@@ -211,4 +211,15 @@ button.black {
   background-attachment: fixed;
   /* background-repeat: no-repeat; */
   /* background-position: 0 -50vh; */
+  --active-base-opacity: 0.5
+}
+.visualizer-slice.pressed {
+  opacity: var(--active-base-opacity);
+}
+.visualizer-slice.playing {
+  animation-name: vis-slice-playing;
+}
+@keyframes vis-slice-playing {
+  from {opacity: 0;}
+  to {opacity:var(--active-base-opacity);}
 }
