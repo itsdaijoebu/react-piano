@@ -1,7 +1,6 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import Note from "./Note";
 import Sustain from "./Sustain";
-import Octave from "./Octave";
 import Visualizer from "./Visualizer";
 import { keyboardLayouts } from "./keyboardLayouts";
 import { octaveBasic } from "./helpers";

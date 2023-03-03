@@ -58,7 +58,7 @@ export default function Visualizer({
                   randSlice.style.opacity = String(
                     Number(randSlice.style.opacity) + visFadeSpeed
                   );
-                }, 500);
+                }, 100);
                 const slicesOnNote = slicesOfNote.get(keyboardKey) || [];
                 slicesOnNote.push(randSlice);
                 slicesOfNote.set(keyboardKey, slicesOnNote);
