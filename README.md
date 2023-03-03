@@ -1,4 +1,4 @@
-# React Piano
+# Cosmic Keys
 
 https://user-images.githubusercontent.com/93284023/222634561-f7ba2a41-809c-457d-9bc1-b2735ba5f119.mp4
 
