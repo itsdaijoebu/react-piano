@@ -25,7 +25,11 @@ dist-ssr
 
 .env
 
+#personal ignore files
 video
 *copy.tsx
+showoff
+
+
 # Local Netlify folder
 .netlify

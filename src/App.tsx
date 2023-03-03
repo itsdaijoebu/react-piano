@@ -40,17 +40,19 @@ function App() {
       .then((data) => {
         let newImages = [data.url];
         imagesRef.current = newImages;
-        return fetch(nasaMultipleUrl);
-      })
-      .then((response) => response.json())
-      .then((nasaPics) => {
-        let newImages = [...imagesRef.current];
-        for (let pic of nasaPics) {
-          newImages.push(pic.url);
-          imagesRef.current = newImages;
-        }
         console.log("all images", imagesRef.current);
+
+        // return fetch(nasaMultipleUrl);
       })
+      // .then((response) => response.json())
+      // .then((nasaPics) => {
+      //   let newImages = [...imagesRef.current];
+      //   for (let pic of nasaPics) {
+      //     newImages.push(pic.url);
+      //     imagesRef.current = newImages;
+      //   }
+      //   console.log("all images", imagesRef.current);
+      // })
       .catch((err) => {
         console.error(err);
       });
