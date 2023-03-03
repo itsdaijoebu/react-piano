@@ -51,14 +51,14 @@ export default function Visualizer({
                   ];
                 randSlice.style.opacity = "0";
                 let interval = setInterval(() => {
-                  if (Number(randSlice.style.opacity) >= 1) {
-                    clearInterval(interval);
+                  if (Number(randSlice.style.opacity) >= 0.5) {
+                    // clearInterval(interval);
                     return;
                   }
                   randSlice.style.opacity = String(
                     Number(randSlice.style.opacity) + visFadeSpeed
                   );
-                }, 100);
+                }, 500);
                 const slicesOnNote = slicesOfNote.get(keyboardKey) || [];
                 slicesOnNote.push(randSlice);
                 slicesOfNote.set(keyboardKey, slicesOnNote);
