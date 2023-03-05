@@ -48,33 +48,36 @@ export default function Visualizer({
                   visSlices.current[
                     Math.floor(Math.random() * visSlices.current.length)
                   ];
-                randSlice.classList.add('playing')
-                randSlice.classList.add('pressed')
+                randSlice.classList.add("playing");
+                randSlice.classList.add("pressed");
                 const slicesOnNote = slicesOfNote.get(keyboardKey) || [];
                 slicesOnNote.push(randSlice);
                 slicesOfNote.set(keyboardKey, slicesOnNote);
                 noteOfSlice.set(randSlice, keyboardKey);
               }
             }
-            if(!keyboardKey.classList.contains("pressed")) {
-              const slices = slicesOfNote.get(keyboardKey);
-              if(!slices) return
-              for(let slice of slices) {
-                if(noteOfSlice.get(slice) === keyboardKey) {
-                  slice.classList.remove('pressed')
-                }
-              }
-            }
-            if (!keyboardKey.classList.contains("playing")) {
+            if (!keyboardKey.classList.contains("pressed")) {
               const slices = slicesOfNote.get(keyboardKey);
               if (!slices) return;
               for (let slice of slices) {
                 if (noteOfSlice.get(slice) === keyboardKey) {
-                  noteOfSlice.delete(slice);
-                  slicesOfNote.delete(keyboardKey);
-                  slice.classList.remove('playing')
+                  slice.classList.remove("pressed");
                 }
               }
+            }
+            if (!keyboardKey.classList.contains("playing")) {
+              setTimeout(() => {
+                if(keyboardKey.classList.contains("playing")) return
+                const slices = slicesOfNote.get(keyboardKey);
+                if (!slices) return;
+                for (let slice of slices) {
+                  if (noteOfSlice.get(slice) === keyboardKey) {
+                    noteOfSlice.delete(slice);
+                    slicesOfNote.delete(keyboardKey);
+                    slice.classList.remove("playing");
+                  }
+                }
+              }, 50);
             }
           }
         }
